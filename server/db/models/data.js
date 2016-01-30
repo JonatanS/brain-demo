@@ -1,0 +1,9 @@
+
+var mongoose = require('mongoose');
+var schema = new mongoose.Schema({
+    date_created: {type: Date, default: Date.now},
+    type: {type: String, enum: ['sin'], required: true},
+    data: {type: Object, required: true}
+}, {minimize: false});  //this setting will not convert empty object to null
+
+mongoose.model('Data', schema);
