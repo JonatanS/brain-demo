@@ -19,8 +19,23 @@ app.factory('BrainFactory', function ($http){
         });
     };
 
+    var readTextFile = function(filename) {
+        return $http.get('/api/reviews', {params: {filename: filename}})
+        .then(function(response){
+            //convert to array and return
+            var unfilteredArr = response.data.split('\n').map(function(line){
+                return line.split('\t')
+            });
+
+            return unfilteredArr.filter(function(subArr){
+                return subArr[1] !== ""
+            });
+        });
+    }
+
     return {
         load: loadData,
-        save: saveData
+        save: saveData,
+        readTextFile: readTextFile
     };
 });

@@ -6,18 +6,23 @@
                 <div class="border row training">
                     <div class="input col-sm-4">
                         <h2>1. train net</h2>
-                        <form ng-submit="train()">
+<!--                             <div class="btn-group" role="group" aria-label="...">
+                              <button type="button" ng-click="trainFromReviews('yelp_labelled.txt')" class="btn btn-default">Yelp</button>
+                              <button type="button" ng-click="trainFromReviews('amazon_cells_labelled.txt')" class="btn btn-default">Amazon</button>
+                              <button type="button" ng-click="trainFromReviews('imdb_labelled.txt')"class="btn btn-default">IMDB</button>
+                            </div> -->
+
+                        <form ng-submit="trainFromReviews()">
+                            <select class="form-control" name="setSelector" id="setSelector" ng-model="trainingSet.selectedSet">
+                                <option ng-repeat="review in trainingSet.reviews" value="{{review.id}}">{{review.name}}</option>
+                            </select>
                             <label for="threshold">Error Threshold (%):</label>
                             {{(settings.threshold/10000)}}
-                            <input type="range" min="1" max="100" step="4" ng-model="settings.threshold" />
+                            <input type="range" min="10" max="1000" step="10" ng-model="settings.threshold" />
                             <br/>
                             <label for="iterations">Max Iterations:</label>
                             {{settings.iterations}}
                             <input type="range" min="5000" max="50000" step="1000" ng-model="settings.iterations" />
-                            <br/>
-                            <label for="size">Training Size:</label>
-                            {{training.size}}
-                            <input type="range" min="150" step="50" max="500" ng-model="training.size" />
                             <br/>
                             <button type="submit" class="btn btn-default">Train Net and Save Set</button>
                         </form>

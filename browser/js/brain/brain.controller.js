@@ -1,5 +1,6 @@
 //brain.controller.js
 
+
 app.controller('BrainCtrl', function ($scope, BrainFactory) {
     var netToTrain = new brain.NeuralNetwork();
     var netToTest = new brain.NeuralNetwork();
@@ -21,18 +22,43 @@ app.controller('BrainCtrl', function ($scope, BrainFactory) {
         err: ''
     };
 
-    // var size = 400;
-    // var iterations = 20000;
-    $scope.train = function() {
-        if(myLiveChart) myLiveChart.destroy();
-        setUpGraph();
+    $scope.trainingSet = {
+        reviews:[
+            {id:'yelp_labelled.txt', name:'1000 Yelp Reviews'},
+            {id:'amazon_cells_labelled.txt', name:'1000 Amazon Reviews'},
+            {id:'imdb_labelled.txt', name:'1000 IMDB Reviews'}
+        ]
+    };
+
+    $scope.trainFromReviews = function() {
+        BrainFactory.readTextFile($scope.trainingSet.selectedSet)
+        .then(function(fileArr) {
+            var trainArr = fileArr.map(function(subArr){
+                return {input: subArr[0], output: subArr[1]};
+            });
+            trainArr.pop();
+            debugger;
+            train(trainArr);
+        });
+    };
+
+    $scope.createSinTrainingSet = function() {
         var trainArr = [];
         for (var i = 0; i < $scope.training.size; i++) {
             trainArr.push(
                 {input: {val:i/($scope.training.size-1)},
                 output: {res: Math.sin(i/($scope.training.size-1))}}
-            )
+            );
         }
+
+        train(trainArr);
+    };
+
+    // var size = 400;
+    // var iterations = 20000;
+    var train = function(trainArr) {
+        if(myLiveChart) myLiveChart.destroy();
+        setUpGraph();
 
         netToTrain.train(trainArr,{
             errorThresh: $scope.settings.threshold/10000,  // error threshold to reach
@@ -46,7 +72,6 @@ app.controller('BrainCtrl', function ($scope, BrainFactory) {
         netToTest = netToTrain;
         save();
         // debugger;
-
     };
 
     $scope.load = function(typesToLoad) {
