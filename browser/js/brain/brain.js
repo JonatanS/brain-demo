@@ -1,7 +1,13 @@
 app.config(function ($stateProvider) {
-    $stateProvider.state('brain', {
-        url: '/brain',
-        templateUrl: 'js/brain/brain.html',
+    $stateProvider.state('brain1', {
+        url: '/',
+        templateUrl: 'js/brain/brain_sin.html',
+        controller: 'BrainCtrl'
+    });
+
+    $stateProvider.state('brain2', {
+        url: '/brain2',
+        templateUrl: 'js/brain/brain_sentiment.html',
         controller: 'BrainCtrl'
     });
 });
