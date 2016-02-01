@@ -12,7 +12,8 @@ app.controller('BrainCtrl', function ($scope, BrainFactory) {
 
     $scope.settings = {
         threshold: 5,
-        iterations: 20000
+        iterations: 20000,
+        logPeriod: 100
     };
 
     $scope.test = {
@@ -21,6 +22,11 @@ app.controller('BrainCtrl', function ($scope, BrainFactory) {
         correctVal: '',
         err: ''
     };
+
+    //the array of entries to test the trained set with
+    $scope.testHousingSet = {
+        data: []
+    }
 
     $scope.trainingSet = {
         reviews:[
@@ -33,8 +39,11 @@ app.controller('BrainCtrl', function ($scope, BrainFactory) {
     $scope.trainFromHousingSet = function() {
         BrainFactory.readHousingData()
         .then(function(fileArr) {
-            //fileArr.splice(0,100);
-            train(fileArr);
+            //use 480 entry to train
+            var trainArr = fileArr.slice(0,480);
+            //use remaining 36 entries for testing:
+            $scope.testHousingSet.data = fileArr.slice(481);
+            train('housing',trainArr);
         });
     };
 
@@ -46,7 +55,7 @@ app.controller('BrainCtrl', function ($scope, BrainFactory) {
             });
             trainArr.pop();
             debugger;
-            train(trainArr);
+            train('reviews',trainArr);
         });
     };
 
@@ -58,13 +67,10 @@ app.controller('BrainCtrl', function ($scope, BrainFactory) {
                 output: {res: Math.sin(i/($scope.training.size-1))}}
             );
         }
-
-        train(trainArr);
+        train('sin',trainArr);
     };
 
-    // var size = 400;
-    // var iterations = 20000;
-    var train = function(trainArr) {
+    var train = function(setType,trainArr) {
         if(myLiveChart) myLiveChart.destroy();
         setUpGraph();
 
@@ -72,39 +78,78 @@ app.controller('BrainCtrl', function ($scope, BrainFactory) {
             errorThresh: $scope.settings.threshold/10000,  // error threshold to reach
             iterations: $scope.settings.iterations,   // maximum training iterations
             log: function () { addDataPoint(arguments[1], arguments[3]); },           // console.log() progress periodically
-            logPeriod: 1000,       // number of iterations between logging
+            logPeriod: $scope.settings.logPeriod,       // number of iterations between logging
             learningRate: 0.3   // learning rate
         });
         console.log('done training:');
         console.dir(netToTrain);
         netToTest = netToTrain;
-        save();
-        // debugger;
+        save(setType);
     };
 
     $scope.load = function(typesToLoad) {
         // if(typeof typesToLoad !== 'object') typesToLoad = {};
-        BrainFactory.load(typesToLoad).then(function(allSets){
-            //find latest where type === 'sin' and do net.fromJSON()
-            var latest = allSets.pop().data;
-            // var latest = allSets[0].data;
-            console.log(latest);
-            netToTest.fromJSON(latest);
+        BrainFactory.load(typesToLoad)
+        .then(function(allSets){
+
+                var latest = allSets.pop().data;
+                // var latest = allSets[0].data;
+                console.log(latest);
+                netToTest.fromJSON(latest);
+                if (typesToLoad === 'housing') {
+                    BrainFactory.readHousingData()
+                    .then(function(fileArr) {
+                        //populate dropdown with input options
+                        $scope.testHousingSet.data = fileArr.slice(481);
+                    });
+                }
+
         });
     };
 
-    $scope.testBrain = function(){
-        console.log('testing');
+    // $scope.load = function(typesToLoad) {
+    //     // if(typeof typesToLoad !== 'object') typesToLoad = {};
+    //     BrainFactory.load(typesToLoad)
+    //     .then(function(allSets){
+    //             if (typesToLoad === 'sin') {
+    //             //find latest where type === 'sin' and do net.fromJSON()
+    //             var latest = allSets.pop().data;
+    //             // var latest = allSets[0].data;
+    //             console.log(latest);
+    //             netToTest.fromJSON(latest);
+    //         } else if (typesToLoad === 'housing') {
+    //             BrainFactory.readHousingData()
+    //             .then(function(fileArr) {
+    //                 //use remaining 36 entries for testing:
+    //                 $scope.testHousingSet.data = fileArr.slice(481);
+    //             });
+    //             debugger;
+    //             console.log(allSets);
+    //             netToTest.fromJSON(allSets);
+    //         }
+
+    //     });
+    // };
+
+    $scope.testBrainHousing = function() {
+        var testVal = JSON.parse($scope.testHousingSet.selectedSet).input;
+        var output = netToTest.run(testVal);
+        console.log('result:', JSON.stringify(output));
+        $scope.test.result = output[0];
+        $scope.test.correctVal = JSON.parse($scope.testHousingSet.selectedSet).output[0];
+        $scope.test.err = Math.abs($scope.test.result - $scope.test.correctVal);
+    };
+
+    $scope.testBrainSin = function(){
         var testVal = $scope.test.val;
         var output = netToTest.run({ val: testVal });
-        console.log(output);
         $scope.test.result = output.res;
         $scope.test.correctVal = Math.sin(testVal);
         $scope.test.err = Math.abs(output.res - $scope.test.correctVal);
-        console.log(output.res, Math.sin(testVal));
     };
-    var save = function() {
-        BrainFactory.save({type:'sin', data: netToTrain.toJSON()})
+
+    var save = function(setType) {
+        BrainFactory.save({type:setType, data: netToTrain.toJSON()})
         .then(function(savedNet){
             console.log('saved:', savedNet);
         });

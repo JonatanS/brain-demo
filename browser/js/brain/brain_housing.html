@@ -15,6 +15,10 @@
                             {{settings.iterations}}
                             <input type="range" min="5000" max="50000" step="1000" ng-model="settings.iterations" />
                             <br/>
+                            <label for="iterations">Log Period:</label>
+                            {{settings.logPeriod}}
+                            <input type="range" min="25" max="5000" step="25" ng-model="settings.logPeriod" />
+                            <br/>
                             <button type="submit" class="btn btn-default">Train Net and Save Set</button>
                         </form>
                     </div>
@@ -30,7 +34,7 @@
             <div class="col-sm-8">
                 <div class="border">
                     <h2>2. load net</h2>
-                    <form class="form-inline" ng-submit="load('sin')">
+                    <form class="form-inline" ng-submit="load('housing')">
                         <button type="submit" class="btn btn-default">Load Training Set from DB</button>
                     </form>
                 </div>
@@ -41,18 +45,19 @@
                 <div class="border">
                     <h2>3. test net</h2>
                     <div class="row">
-                        <div class="testing col-sm-4">
-                            <form class="form-inline" ng-submit="testBrain()">
+                        <div class="testing col-sm-8">
+                            <form class="form-inline" ng-submit="testBrainHousing()">
                                 <div class="form-group">
-                                    <label>Test Value</label>
-                                    <input type="text" class="form-control" ng-model="test.val" placeholder="value btwn 0 and 1">
+                                <select class="form-control" name="housingTestSelector" id="housingTestSelector" ng-model="testHousingSet.selectedSet">
+                                    <option ng-repeat="entry in testHousingSet.data" value="{{entry}}">{{entry.input}}</option>
+                                </select>
                                 </div>
                                 <button type="submit" class="btn btn-default">Test the Brain</button>
                             </form>
                         </div>
                         <div class="result col-sm-4">
-                            <p>Algorithm result:<span>{{test.result  | number:5}}</span></p>
-                            <p>Precise result:<span>{{test.correctVal | number:5}}</span></p>
+                            <p>Algorithm result:<span>{{test.result}}</span></p>
+                            <p>Precise result:<span>{{test.correctVal}}</span></p>
                             <!--                 <p>Error:<span>{{test.err}}</span></p> -->
                         </div>
                     </div>

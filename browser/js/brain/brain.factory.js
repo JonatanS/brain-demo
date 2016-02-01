@@ -1,16 +1,8 @@
 app.factory('BrainFactory', function($http) {
     var loadData = function(typesToLoad) {
-        return $http.get('/api/data', {
-            params: typesToLoad
-        }).then(function(response) {
-            // var retArr = response.data.map(function(obj) {
-            //     var newData = JSON.parse(obj.data);
-            //     obj.data = newData;
-            //     return obj;
 
-            // });
-            // console.log('after:')
-            // console.dir(retArr);
+        return $http.get('/api/data', {params: typesToLoad })
+        .then(function(response) {
             return response.data;
         });
     };
@@ -41,36 +33,12 @@ app.factory('BrainFactory', function($http) {
 
 
     var readHousingData = function() {
-        return $http.get('/api/housing')
+        return $http.get('/api/housing/normalized')
         .then(function(response) {
-            //convert to array and return
-            var unfilteredArr = response.data.split('\n').map(function(line) {
-                return line.split(' ').filter(function(entry){
-                    return entry != "";
-                });
-            });
-            return unfilteredArr.map(function(subArr) {
+            debugger;
+            //convert to objects and return
+            return response.data.map(function(subArr) {
                 return {
-                    //turn into training objects
-                    // {
-                    //     input: {
-                    //         'crime': subArr[0],
-                    //         'zoning':subArr[1],
-                    //         'indst':subArr[2],
-                    //         'river' :subArr[3],
-                    //         'NOX' :subArr[4],
-                    //         'rooms' :subArr[5],
-                    //         'age' :subArr[6],
-                    //         'dist' :subArr[7],
-                    //         'hgwy' :subArr[8],
-                    //         'tax' :subArr[9],
-                    //         'teacher' :subArr[10],
-                    //         'lstat' :subArr[12],
-                    //     },
-                    //     output: {
-                    //         'value': subArr[13]
-                    //     }
-                    // }
                     input: [Number(subArr[0].trim()),
                             Number(subArr[1].trim()),
                             Number(subArr[2].trim()),
