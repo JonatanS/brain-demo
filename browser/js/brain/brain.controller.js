@@ -30,6 +30,14 @@ app.controller('BrainCtrl', function ($scope, BrainFactory) {
         ]
     };
 
+    $scope.trainFromHousingSet = function() {
+        BrainFactory.readHousingData()
+        .then(function(fileArr) {
+            //fileArr.splice(0,100);
+            train(fileArr);
+        });
+    };
+
     $scope.trainFromReviews = function() {
         BrainFactory.readTextFile($scope.trainingSet.selectedSet)
         .then(function(fileArr) {
@@ -64,7 +72,7 @@ app.controller('BrainCtrl', function ($scope, BrainFactory) {
             errorThresh: $scope.settings.threshold/10000,  // error threshold to reach
             iterations: $scope.settings.iterations,   // maximum training iterations
             log: function () { addDataPoint(arguments[1], arguments[3]); },           // console.log() progress periodically
-            logPeriod: 100,       // number of iterations between logging
+            logPeriod: 1000,       // number of iterations between logging
             learningRate: 0.3   // learning rate
         });
         console.log('done training:');
