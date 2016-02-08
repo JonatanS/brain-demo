@@ -65,7 +65,9 @@
             </div>
         </div>
         <div class="alert alert-success" role="alert">
-          <p>{{test.detailedInput}}</p>
+            <!-- {{myVar === "two" ? "it's true" : "it's false"}} -->
+          <div ng-repeat="(key, value) in test.detailedInput"> {{key}}: {{key==="MEDV" ? value*1000 : value}} </div>
+<!--           <div ng-repeat="(key, value) in test.detailedInput"> {{key}}: {{value}} </div> -->
         </div>
     </div>
 </section>
