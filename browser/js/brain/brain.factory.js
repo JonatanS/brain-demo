@@ -9,8 +9,13 @@ app.factory('BrainFactory', function($http) {
 
     var saveData = function(data) {
         return $http.post('/api/data', data).then(function(response) {
+            console.log("SAVED:");
+            console.log(response.data);
             return response.data;
-        });
+        }).then(null, function(err){
+            console.log("ERROR SAVING!!!");
+            console.log(err);
+        })
     };
 
     var readTextFile = function(filename) {
@@ -35,24 +40,23 @@ app.factory('BrainFactory', function($http) {
     var readHousingData = function() {
         return $http.get('/api/housing/normalized')
         .then(function(response) {
-            debugger;
             //convert to objects and return
             return response.data.map(function(subArr) {
                 return {
-                    input: [Number(subArr[0].trim()),
-                            Number(subArr[1].trim()),
-                            Number(subArr[2].trim()),
-                            Number(subArr[3].trim()),
-                            Number(subArr[4].trim()),
-                            Number(subArr[5].trim()),
-                            Number(subArr[6].trim()),
-                            Number(subArr[7].trim()),
-                            Number(subArr[8].trim()),
-                            Number(subArr[9].trim()),
-                            Number(subArr[10].trim()),
-                            Number(subArr[11].trim()),
-                            Number(subArr[12].trim())],
-                    output: [Number(subArr[13].trim())]
+                    input: [Number(subArr[0]),
+                            Number(subArr[1]),
+                            Number(subArr[2]),
+                            Number(subArr[3]),
+                            Number(subArr[4]),
+                            Number(subArr[5]),
+                            Number(subArr[6]),
+                            Number(subArr[7]),
+                            Number(subArr[8]),
+                            Number(subArr[9]),
+                            Number(subArr[10]),
+                            Number(subArr[11]),
+                            Number(subArr[12])],
+                    output: [Number(subArr[13])]
                 }
             });
         });

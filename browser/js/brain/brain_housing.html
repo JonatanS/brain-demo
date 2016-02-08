@@ -45,20 +45,20 @@
                 <div class="border">
                     <h2>3. test net</h2>
                     <div class="row">
-                        <div class="testing col-sm-8">
+                        <div class="testing col-sm-6">
                             <form class="form-inline" ng-submit="testBrainHousing()">
                                 <div class="form-group">
                                 <select class="form-control" name="housingTestSelector" id="housingTestSelector" ng-model="testHousingSet.selectedSet">
-                                    <option ng-repeat="entry in testHousingSet.data" value="{{entry}}">{{entry.input}}</option>
+                                    <option ng-repeat="entry in testHousingSet.data" value="{{entry}}">Entry #{{$index+1}}</option>
                                 </select>
                                 </div>
                                 <button type="submit" class="btn btn-default">Test the Brain</button>
                             </form>
                         </div>
                         <div class="result col-sm-4">
-                            <p>Algorithm result:<span>{{test.result}}</span></p>
-                            <p>Precise result:<span>{{test.correctVal}}</span></p>
-                            <!--                 <p>Error:<span>{{test.err}}</span></p> -->
+                            <p>Algorithm result:<span>{{test.result | number : 3}}</span></p>
+                            <p>Precise result:<span>{{test.correctVal | number : 3}}</span></p>
+                            <p>Error:<span>{{(test.err *100) | number : 3}}%</span></p>
                         </div>
                     </div>
                 </div>

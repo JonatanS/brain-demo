@@ -20,9 +20,6 @@ router.get('/normalized', function (req, res, next) {
     var path = __dirname + '/housing.data';
     console.log(path);
     readFile(path)
-    // .then(function(contents){
-    //     return eval(contents.toString());
-    // })
     .then(function(myFile){
         var file = myFile.toString();
 
@@ -37,16 +34,17 @@ router.get('/normalized', function (req, res, next) {
             });
         });
 
-        var normalizedArr = _.zip(cleanedArr).map(function(col) {
-            var max = Math.max(...col);
-            var min = Math.min(...col);
-
+        //for every column, find min, max, and normalize the current value to be between 0 and 1
+        //todo: return an array of min and max for every column
+        var normalizedArr = _.zip.apply(_,cleanedArr).map(function(col) {
+            var max = _.max(col);
+            var min = _.min(col);
             return col.map(function(val){
-                return (val-min)/(max-min);
+                return (val-min)/(max-min) || 0;    //return 0 in case of 'null'
             });
         });
         //zip again to flip matrix
-        res.send(_.zip(normalizedArr));
+        res.send(_.zip.apply(_,normalizedArr));
     })
     .then(null, next);
 });

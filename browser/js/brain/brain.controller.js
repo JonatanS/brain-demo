@@ -13,7 +13,7 @@ app.controller('BrainCtrl', function ($scope, BrainFactory) {
     $scope.settings = {
         threshold: 5,
         iterations: 20000,
-        logPeriod: 100
+        logPeriod: 1000
     };
 
     $scope.test = {
@@ -54,7 +54,6 @@ app.controller('BrainCtrl', function ($scope, BrainFactory) {
                 return {input: subArr[0], output: subArr[1]};
             });
             trainArr.pop();
-            debugger;
             train('reviews',trainArr);
         });
     };
@@ -88,7 +87,6 @@ app.controller('BrainCtrl', function ($scope, BrainFactory) {
     };
 
     $scope.load = function(typesToLoad) {
-        // if(typeof typesToLoad !== 'object') typesToLoad = {};
         BrainFactory.load(typesToLoad)
         .then(function(allSets){
 
@@ -134,7 +132,7 @@ app.controller('BrainCtrl', function ($scope, BrainFactory) {
     $scope.testBrainHousing = function() {
         var testVal = JSON.parse($scope.testHousingSet.selectedSet).input;
         var output = netToTest.run(testVal);
-        console.log('result:', JSON.stringify(output));
+        console.log('result:', JSON.stringify(output[0]));
         $scope.test.result = output[0];
         $scope.test.correctVal = JSON.parse($scope.testHousingSet.selectedSet).output[0];
         $scope.test.err = Math.abs($scope.test.result - $scope.test.correctVal);
@@ -149,7 +147,7 @@ app.controller('BrainCtrl', function ($scope, BrainFactory) {
     };
 
     var save = function(setType) {
-        BrainFactory.save({type:setType, data: netToTrain.toJSON()})
+        return BrainFactory.save({type:setType, data: netToTrain.toJSON()})
         .then(function(savedNet){
             console.log('saved:', savedNet);
         });

@@ -11,11 +11,9 @@ router.get('/', function (req, res) {
 });
 
 router.post('/', function (req, res) {
-    // var upload = req.body;
-    // var data = JSON.stringify(req.body.data).toString();
-    // //debugger;
-    // console.log(data);
-    Data.create(req.body).then(function(newData){
+    return Data.create(req.body).then(function(newData){
         res.send(newData);
+    }).then(null, function(err){
+        console.error(err);
     });
 });
