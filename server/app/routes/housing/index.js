@@ -9,8 +9,20 @@ router.get('/', function (req, res, next) {
     var path = __dirname + '/housing.data';
     console.log(path);
     readFile(path)
-    .then(function(file){
-        res.send(file);
+    .then(function(myFile){
+        var file = myFile.toString();
+
+        var unfilteredArr = file.split('\n').map(function(line) {
+                return line.split(' ').filter(function(entry){
+                    return entry != "";
+                });
+            });
+        var cleanedArr = unfilteredArr.map(function(subArr) {
+            return subArr.map(function(entry) {
+                return Number(entry.trim());
+            });
+        });
+        res.send(cleanedArr.slice(481));    //only send last 25 entries
     })
     .then(null, next);
 });

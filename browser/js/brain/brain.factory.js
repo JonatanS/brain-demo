@@ -39,7 +39,7 @@ app.factory('BrainFactory', function($http) {
 
     var readHousingData = function() {
         return $http.get('/api/housing/normalized')
-        .then(function(response) {
+        .then(function (response) {
             //convert to objects and return
             return response.data.map(function(subArr) {
                 return {
@@ -62,10 +62,36 @@ app.factory('BrainFactory', function($http) {
         });
     };
 
+    var readHousingInfo = function() {
+        return $http.get('/api/housing/')
+        .then(function (response){
+            //create objects
+            return (response.data.map(function (subArr){
+                return {
+                    'CRIM': Number(subArr[0]),
+                    'ZN': Number(subArr[1]),
+                    'INDUS': Number(subArr[2]),
+                    'CHAS': Number(subArr[3]),
+                    'NOX': Number(subArr[4]),
+                    'RM': Number(subArr[5]),
+                    'AGE': Number(subArr[6]),
+                    'DIS': Number(subArr[7]),
+                    'RAD': Number(subArr[8]),
+                    'TAX': Number(subArr[9]),
+                    'PTRATIO': Number(subArr[10]),
+                    'B': Number(subArr[11]),
+                    'LSTAT': Number(subArr[12]),
+                    'MEDV': Number(subArr[13])
+                }
+            }));
+        })
+    };
+
     return {
         load: loadData,
         save: saveData,
         readTextFile: readTextFile,
-        readHousingData: readHousingData
+        readHousingData: readHousingData,
+        readHousingInfo: readHousingInfo
     };
 });

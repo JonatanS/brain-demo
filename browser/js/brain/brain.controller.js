@@ -4,7 +4,7 @@
 app.controller('BrainCtrl', function ($scope, BrainFactory) {
     var netToTrain = new brain.NeuralNetwork();
     var netToTest = new brain.NeuralNetwork();
-    var myLiveChart;
+    var myLiveChart, detailedHousingArr;
 
     $scope.training = {
         size: 200
@@ -97,45 +97,27 @@ app.controller('BrainCtrl', function ($scope, BrainFactory) {
                 if (typesToLoad === 'housing') {
                     BrainFactory.readHousingData()
                     .then(function(fileArr) {
-                        //populate dropdown with input options
-                        $scope.testHousingSet.data = fileArr.slice(481);
+                        $scope.testHousingSet.data = fileArr.slice(481);    //trim of 25 entries for testing
                     });
                 }
 
         });
+        BrainFactory.readHousingInfo()
+        .then(function (housingInfoArr){
+            detailedHousingArr = housingInfoArr;
+        });
     };
 
-    // $scope.load = function(typesToLoad) {
-    //     // if(typeof typesToLoad !== 'object') typesToLoad = {};
-    //     BrainFactory.load(typesToLoad)
-    //     .then(function(allSets){
-    //             if (typesToLoad === 'sin') {
-    //             //find latest where type === 'sin' and do net.fromJSON()
-    //             var latest = allSets.pop().data;
-    //             // var latest = allSets[0].data;
-    //             console.log(latest);
-    //             netToTest.fromJSON(latest);
-    //         } else if (typesToLoad === 'housing') {
-    //             BrainFactory.readHousingData()
-    //             .then(function(fileArr) {
-    //                 //use remaining 36 entries for testing:
-    //                 $scope.testHousingSet.data = fileArr.slice(481);
-    //             });
-    //             debugger;
-    //             console.log(allSets);
-    //             netToTest.fromJSON(allSets);
-    //         }
-
-    //     });
-    // };
-
     $scope.testBrainHousing = function() {
-        var testVal = JSON.parse($scope.testHousingSet.selectedSet).input;
+
+        var idx = Number($scope.testHousingSet.selectedIndex);
+        var testVal = $scope.testHousingSet.data[idx].input;
         var output = netToTest.run(testVal);
         console.log('result:', JSON.stringify(output[0]));
         $scope.test.result = output[0];
-        $scope.test.correctVal = JSON.parse($scope.testHousingSet.selectedSet).output[0];
+        $scope.test.correctVal = $scope.testHousingSet.data[idx].output[0];
         $scope.test.err = Math.abs($scope.test.result - $scope.test.correctVal);
+        $scope.test.detailedInput = detailedHousingArr[idx];
     };
 
     $scope.testBrainSin = function(){

@@ -48,8 +48,8 @@
                         <div class="testing col-sm-6">
                             <form class="form-inline" ng-submit="testBrainHousing()">
                                 <div class="form-group">
-                                <select class="form-control" name="housingTestSelector" id="housingTestSelector" ng-model="testHousingSet.selectedSet">
-                                    <option ng-repeat="entry in testHousingSet.data" value="{{entry}}">Entry #{{$index+1}}</option>
+                                <select class="form-control" name="housingTestSelector" id="housingTestSelector" ng-model="testHousingSet.selectedIndex">
+                                    <option ng-repeat="entry in testHousingSet.data" value="{{$index}}">Entry #{{$index+1}}</option>
                                 </select>
                                 </div>
                                 <button type="submit" class="btn btn-default">Test the Brain</button>
@@ -63,6 +63,9 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="alert alert-success" role="alert">
+          <p>{{test.detailedInput}}</p>
         </div>
     </div>
 </section>
