@@ -64,10 +64,15 @@
                 </div>
             </div>
         </div>
+            <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-4">
         <div class="alert alert-success" role="alert">
             <!-- {{myVar === "two" ? "it's true" : "it's false"}} -->
-          <div ng-repeat="(key, value) in test.detailedInput"> {{key}}: {{key==="MEDV" ? value*1000 : value}} </div>
+          <div ng-class="{{key==='MEDV' ? 'make-bold' : ''}}" ng-repeat="(key, value) in test.detailedInput"> {{key}}: {{key==="MEDV" ? value*1000 : value}} </div>
 <!--           <div ng-repeat="(key, value) in test.detailedInput"> {{key}}: {{value}} </div> -->
+        </div>
+        </div>
         </div>
     </div>
 </section>

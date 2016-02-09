@@ -76,7 +76,7 @@ app.controller('BrainCtrl', function ($scope, BrainFactory) {
         netToTrain.train(trainArr,{
             errorThresh: $scope.settings.threshold/10000,  // error threshold to reach
             iterations: $scope.settings.iterations,   // maximum training iterations
-            log: function () { addDataPoint(arguments[1], arguments[3]); },           // console.log() progress periodically
+            log: function () { addDataPoint(arguments[1], arguments[3]); },
             logPeriod: $scope.settings.logPeriod,       // number of iterations between logging
             learningRate: 0.3   // learning rate
         });

@@ -8,8 +8,7 @@ app.directive('navbar', function ($rootScope, $state) {
 
             scope.items = [
                 { label: 'sine func', state: 'brain1' },
-                { label: 'housing', state: 'brain2' },
-                { label: 'sentiment', state: 'brain3' },
+                { label: 'housing', state: 'brain2' }
             ];
 
         }
