@@ -47,7 +47,6 @@ router.get('/normalized', function (req, res, next) {
         });
 
         //for every column, find min, max, and normalize the current value to be between 0 and 1
-        //todo: return an array of min and max for every column
         var normalizedArr = _.zip.apply(_,cleanedArr).map(function(col) {
             var max = _.max(col);
             var min = _.min(col);
@@ -55,7 +54,6 @@ router.get('/normalized', function (req, res, next) {
                 return (val-min)/(max-min) || 0;    //return 0 in case of 'null'
             });
         });
-        //zip again to flip matrix
         res.send(_.zip.apply(_,normalizedArr));
     })
     .then(null, next);

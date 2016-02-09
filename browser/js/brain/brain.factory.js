@@ -9,8 +9,6 @@ app.factory('BrainFactory', function($http) {
 
     var saveData = function(data) {
         return $http.post('/api/data', data).then(function(response) {
-            console.log("SAVED:");
-            console.log(response.data);
             return response.data;
         }).then(null, function(err){
             console.log("ERROR SAVING!!!");
