@@ -4,7 +4,7 @@
 app.controller('BrainCtrl', function ($scope, BrainFactory) {
     var netToTrain = new brain.NeuralNetwork();
     var netToTest = new brain.NeuralNetwork();
-    var myLiveChart, detailedHousingArr, netToSave;
+    var myLiveChart, detailedHousingArr, detailedPipesArr, netToSave;
 
     // $scope.training = {
     //     size: 200
@@ -12,9 +12,9 @@ app.controller('BrainCtrl', function ($scope, BrainFactory) {
 
     $scope.settings = {
         threshold: 5,
-        iterations: 20000,
-        logPeriod: 1000,
-        setSize: 400
+        iterations: 10000,
+        logPeriod: 5000,
+        setSize: 2000
     };
 
     $scope.test = {
@@ -26,6 +26,10 @@ app.controller('BrainCtrl', function ($scope, BrainFactory) {
 
     //the array of entries to test the trained set with
     $scope.testHousingSet = {
+        data: []
+    };
+
+    $scope.testPipesSet = {
         data: []
     };
 
@@ -41,6 +45,18 @@ app.controller('BrainCtrl', function ($scope, BrainFactory) {
             //use remaining 36 entries for testing:
             $scope.testHousingSet.data = fileArr.slice($scope.settings.setSize + 1);
             train('housing',trainArr);
+        });
+    };
+
+    $scope.trainFromPipesSet = function() {
+        BrainFactory.readPipesData()
+        .then(function(fileArr) {
+            
+            //use 480 entry to train
+            var trainArr = fileArr.slice(0,$scope.settings.setSize);
+            //use remaining 36 entries for testing:
+            $scope.testPipesSet.data = fileArr.slice($scope.settings.setSize + 1);
+            train('pipes',trainArr);
         });
     };
 
@@ -88,21 +104,45 @@ app.controller('BrainCtrl', function ($scope, BrainFactory) {
         .then(function(allSets){
             $scope.allSets.data = allSets;   //ng-select from here
         });
-        BrainFactory.readHousingInfo()
-        .then(function (housingInfoArr){
-            detailedHousingArr = housingInfoArr;
-        });
+
+        if(typesToLoad === 'housing') {
+            BrainFactory.readHousingInfo()
+            .then(function (housingInfoArr){
+                detailedHousingArr = housingInfoArr;
+            });
+        }
+
+        else if(typesToLoad === 'pipes') {
+            BrainFactory.readPipesInfo()
+            .then(function (pipesInfoArr){
+                detailedPipesArr = pipesInfoArr;
+            });
+        }
     };
 
     $scope.selectSetById = function() {
-        var selected = JSON.parse($scope.testHousingSet.selectedTrainingSet).data;
+        //var selected = JSON.parse($scope.testHousingSet.selectedTrainingSet).data;
+        var selected = JSON.parse($scope.testPipesSet.selectedTrainingSet).data;
         netToTest.fromJSON(selected);
         console.log("set from the DB:");
         console.dir(selected);
-        BrainFactory.readHousingData()
+        //BrainFactory.readHousingData()
+        BrainFactory.readPipesData()
         .then(function(fileArr) {
-            $scope.testHousingSet.data = fileArr.slice($scope.settings.setSize + 1);  //trim of entries for testing
+            //$scope.testHousingSet.data = fileArr.slice($scope.settings.setSize + 1);  //trim of entries for testing
+            $scope.testPipesSet.data = fileArr.slice($scope.settings.setSize + 1);  //trim of entries for testing
         });
+    };
+
+    $scope.testBrainPipes = function() {
+        var idx = Number($scope.testPipesSet.selectedIndex);
+        var testVal = $scope.testPipesSet.data[idx].input;
+        var output = netToTest.run(testVal);
+        console.log('result:', JSON.stringify(output[0]));
+        $scope.test.result = output[0];
+        $scope.test.correctVal = $scope.testPipesSet.data[idx].output[0];
+        $scope.test.err = Math.abs($scope.test.result - $scope.test.correctVal);
+        $scope.test.detailedInput = detailedPipesArr[idx];
     };
 
     $scope.testBrainHousing = function() {

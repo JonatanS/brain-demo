@@ -82,7 +82,7 @@ router.get('/normalized', function (req, res, next) {
 				return col.map(val => legend[index].values[val] || 0);
         	}
         });
-
+        //console.log( _.zip.apply(_,normalizedArr));
         res.send({"legend": legend, "data": _.zip.apply(_,normalizedArr)});
     })
     .then(null, next);
