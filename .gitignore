@@ -4,3 +4,5 @@ npm-debug.log
 public
 .DS_Store
 coverage
+
+server/app/routes/pipes/pipe_trainingSet_ASD.csv

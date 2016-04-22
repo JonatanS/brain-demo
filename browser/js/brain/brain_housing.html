@@ -8,16 +8,20 @@
 
                         <form ng-submit="trainFromHousingSet()">
                             <label for="threshold">Error Threshold (%):</label>
-                            {{(settings.threshold/10000)}}
-                            <input type="range" min="10" max="1000" step="10" ng-model="settings.threshold" />
+                            {{(settings.threshold/10)}}
+                            <input type="range" min="10" max="20" step="1" ng-model="settings.threshold" />
+                            <br/>
+                            <label for="setSize">Size Training Set:</label>
+                            {{settings.setSize}}
+                            <input type="range" min="100" max="500" step="25" ng-model="settings.setSize" />
                             <br/>
                             <label for="iterations">Max Iterations:</label>
                             {{settings.iterations}}
-                            <input type="range" min="5000" max="50000" step="1000" ng-model="settings.iterations" />
+                            <input type="range" min="5000" max="100000" step="1000" ng-model="settings.iterations" />
                             <br/>
                             <label for="iterations">Log Period:</label>
                             {{settings.logPeriod}}
-                            <input type="range" min="25" max="5000" step="25" ng-model="settings.logPeriod" />
+                            <input type="range" min="1000" max="5000" step="100" ng-model="settings.logPeriod" />
                             <br/>
                             <button type="submit" class="btn btn-default">Train Net and Save Set</button>
                         </form>
@@ -36,6 +40,14 @@
                     <h2>2. load net</h2>
                     <form class="form-inline" ng-submit="load('housing')">
                         <button type="submit" class="btn btn-default">Load Training Set from DB</button>
+                    </form>
+                    <form class="form-inline" ng-submit="selectSetById()">
+                        <div class="form-group">
+                        <select class="form-control" name="housingSetSelector" id="housingSetSelector" ng-model="testHousingSet.selectedTrainingSet">
+                            <option ng-repeat="entry in allSets.data" value="{{entry}}">{{entry.type}} | size: {{entry.setSize}} itrns: {{entry.iterations}}</option>
+                        </select>
+                        </div>
+                        <button type="submit" class="btn btn-default">Select Set</button>
                     </form>
                 </div>
             </div>

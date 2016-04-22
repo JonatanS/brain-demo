@@ -4,16 +4,17 @@
 app.controller('BrainCtrl', function ($scope, BrainFactory) {
     var netToTrain = new brain.NeuralNetwork();
     var netToTest = new brain.NeuralNetwork();
-    var myLiveChart, detailedHousingArr;
+    var myLiveChart, detailedHousingArr, netToSave;
 
-    $scope.training = {
-        size: 200
-    };
+    // $scope.training = {
+    //     size: 200
+    // };
 
     $scope.settings = {
         threshold: 5,
         iterations: 20000,
-        logPeriod: 1000
+        logPeriod: 1000,
+        setSize: 400
     };
 
     $scope.test = {
@@ -26,23 +27,19 @@ app.controller('BrainCtrl', function ($scope, BrainFactory) {
     //the array of entries to test the trained set with
     $scope.testHousingSet = {
         data: []
-    }
+    };
 
-    $scope.trainingSet = {
-        reviews:[
-            {id:'yelp_labelled.txt', name:'1000 Yelp Reviews'},
-            {id:'amazon_cells_labelled.txt', name:'1000 Amazon Reviews'},
-            {id:'imdb_labelled.txt', name:'1000 IMDB Reviews'}
-        ]
+    $scope.allSets = {
+        data: []
     };
 
     $scope.trainFromHousingSet = function() {
         BrainFactory.readHousingData()
         .then(function(fileArr) {
             //use 480 entry to train
-            var trainArr = fileArr.slice(0,480);
+            var trainArr = fileArr.slice(0,$scope.settings.setSize);
             //use remaining 36 entries for testing:
-            $scope.testHousingSet.data = fileArr.slice(481);
+            $scope.testHousingSet.data = fileArr.slice($scope.settings.setSize + 1);
             train('housing',trainArr);
         });
     };
@@ -60,10 +57,10 @@ app.controller('BrainCtrl', function ($scope, BrainFactory) {
 
     $scope.createSinTrainingSet = function() {
         var trainArr = [];
-        for (var i = 0; i < $scope.training.size; i++) {
+        for (var i = 0; i < $scope.settings.setSize; i++) {
             trainArr.push(
-                {input: {val:i/($scope.training.size-1)},
-                output: {res: Math.sin(i/($scope.training.size-1))}}
+                {input: {val:i/($scope.settings.setSize-1)},
+                output: {res: Math.sin(i/($scope.settings.setSize-1))}}
             );
         }
         train('sin',trainArr);
@@ -89,18 +86,7 @@ app.controller('BrainCtrl', function ($scope, BrainFactory) {
     $scope.load = function(typesToLoad) {
         BrainFactory.load(typesToLoad)
         .then(function(allSets){
-
-                var latest = allSets.pop().data;
-                // var latest = allSets[0].data;
-                console.log(latest);
-                netToTest.fromJSON(latest);
-                if (typesToLoad === 'housing') {
-                    BrainFactory.readHousingData()
-                    .then(function(fileArr) {
-                        $scope.testHousingSet.data = fileArr.slice(481);    //trim of 25 entries for testing
-                    });
-                }
-
+            $scope.allSets.data = allSets;   //ng-select from here
         });
         BrainFactory.readHousingInfo()
         .then(function (housingInfoArr){
@@ -108,8 +94,18 @@ app.controller('BrainCtrl', function ($scope, BrainFactory) {
         });
     };
 
-    $scope.testBrainHousing = function() {
+    $scope.selectSetById = function() {
+        var selected = JSON.parse($scope.testHousingSet.selectedTrainingSet).data;
+        netToTest.fromJSON(selected);
+        console.log("set from the DB:");
+        console.dir(selected);
+        BrainFactory.readHousingData()
+        .then(function(fileArr) {
+            $scope.testHousingSet.data = fileArr.slice($scope.settings.setSize + 1);  //trim of entries for testing
+        });
+    };
 
+    $scope.testBrainHousing = function() {
         var idx = Number($scope.testHousingSet.selectedIndex);
         var testVal = $scope.testHousingSet.data[idx].input;
         var output = netToTest.run(testVal);
@@ -129,7 +125,9 @@ app.controller('BrainCtrl', function ($scope, BrainFactory) {
     };
 
     var save = function(setType) {
-        return BrainFactory.save({type:setType, data: netToTrain.toJSON()})
+        netToSave = {type:setType, data: netToTrain.toJSON(), setSize: $scope.settings.setSize, iterations: $scope.settings.iterations }
+        $scope.allSets.data.push(netToSave);
+        return BrainFactory.save(netToSave)
         .then(function(savedNet){
             console.log('saved:', savedNet);
         });

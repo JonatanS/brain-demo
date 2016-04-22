@@ -11,6 +11,7 @@ router.get('/', function (req, res) {
 });
 
 router.post('/', function (req, res) {
+    console.log(req.body);
     return Data.create(req.body).then(function(newData){
         res.send(newData);
     }).then(null, function(err){
